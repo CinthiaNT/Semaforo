@@ -28,25 +28,21 @@ void setup() {
 
 void loop() {
   Verde();
-  Amarillo();
-  Rojo();
+  //Amarillo();
+  //Rojo();
 }
 void Verde(){
-    // El tiempo que marca el potenciometro lo multiplicamos 5 veces para aumentar el tiempo
-    valorPot = analogRead(potenciometro)*5;
-    // Se imprime en consola este valor
-    Serial.println(valorPot);
     tiempo = 0;
     //Ciclo que ayuda a realizar el cambio cuando se presiona el boton
-    while(digitalRead(boton_pasarPeaton) !=+ LOW && tiempo<=valorPot){
-      Serial.println("entro");
+    while((digitalRead(boton_pasarPeaton) != LOW )|| (tiempo<5000)){
+          Serial.println(tiempo);
           digitalWrite(led_verde,HIGH); 
           digitalWrite(led_pR,HIGH);
           delay(10);  
-          tiempo +=10;
+          tiempo =tiempo + 10;
     } 
-    // Se realiza un parpadeo para avisar que el semaforo cambiara de estado
-    // El verde para semaforo de autos y el rojo para semaforo peatonal
+    if((digitalRead(boton_pasarPeaton) == LOW) && (tiempo>5000)){
+    // La luz verde parpadea para anunciar el cambio de semaforo
     digitalWrite(led_verde,LOW);  
     digitalWrite(led_pR,LOW);
     delay(200);
@@ -64,6 +60,10 @@ void Verde(){
     digitalWrite(led_verde,LOW);
     digitalWrite(led_pR,LOW);  
     delay(200); 
+    //Llamada a los metodos que anuncian a los conductores que el semaforo cambiara
+    Amarillo();
+    Rojo();
+    }
 }
 
 void Amarillo(){
@@ -74,22 +74,23 @@ void Amarillo(){
     delay(200);  
 }
 void Rojo(){
-    // Se declara el tiempo que el semaforo de autos durara en rojo y el de peatones en verde
+  // El tiempo que durara el semaforo de peaton en verde es controlado por el valor del potenciometro
+    valorPot = analogRead(potenciometro)*5;
     digitalWrite(led_rojo,HIGH); 
-    digitalWrite(led_pV,HIGH); }
+    digitalWrite(led_pV,HIGH); 
     //Se hace una llamada al metodo que genera sonido cuando el peaton puede avanzar
     sonido();  
-    delay(2000);           
+    delay(valorPot);           
     digitalWrite(led_rojo,LOW); 
     digitalWrite(led_pV,LOW); 
     delay(500);
 }
 
 void sonido(){
-  //Este metodo es el que controla el tiempo que el sonido se escuchara
-     analogWrite(buzzer,128); //emite sonido
-     delay(2000); //espera medio segundo
+     //Este metodo es el que controla el tiempo que el sonido se escuchara
+     analogWrite(buzzer,128);   //emite sonido
+     delay(500);               //espera medio segundo
      digitalWrite(buzzer, LOW); //deja de emitir
-     delay(500);//espera medio segundo
+     delay(500);               //espera medio segundo
 }
                
